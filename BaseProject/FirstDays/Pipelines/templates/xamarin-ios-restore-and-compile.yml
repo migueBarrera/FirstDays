@@ -1,0 +1,61 @@
+# This parameters are default values, in case they aren't specified when using this template
+parameters:
+  buildConfiguration: 'Release'
+  outputdirectory: '$(build.binariesdirectory)/ios/$(buildConfiguration)'
+  signingIdentity: '$(IOSDevelopmentSigningIdentity)'
+  signingProvisioningProfileID: '$(IOSProvisioningUUID)'
+  buildforsimulator: true
+  packageapp: false
+  dotnetsdkversion: '3.0.100'
+  runningInAzureHostedAgent: false
+  csproj_ios: '<PLEASE_SPECIFY_CSPROJ_PATH_HERE>'
+  # For available versions, see https://github.com/microsoft/azure-pipelines-image-generation/blob/master/images/macos/macos-10.14-Readme.md        
+  xcodeversion: '11.1'
+  monoversion: '6.4.0'
+  xamariniossdkversion: '13.4.0.2'
+  msbuildversion: 'latest'
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK ${{ parameters.dotnetsdkversion }}'
+    inputs:
+      packageType: sdk
+      version: ${{ parameters.dotnetsdkversion }}
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+  - script: |
+      echo "Setting Xcode version ${{ parameters.xcodeversion }} for Visual Studio for Mac"
+      sudo xcode-select -s /Applications/Xcode_${{ parameters.xcodeversion }}.app/Contents/Developer
+
+      echo "Appending AppleSdkRoot to Settings.plist"
+      mkdir -p /Users/vsts/Library/Preferences/Xamarin
+      cd /Users/vsts/Library/Preferences/Xamarin
+      echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict><key>AppleSdkRoot</key><string>/Applications/Xcode_${{ parameters.xcodeversion }}.app</string></dict></plist>" >> Settings.plist
+
+      echo "Force using Mono ${{ parameters.monoversion }}" 
+      sudo rm -f '/Library/Frameworks/Mono.framework/Versions/Current'
+      sudo ln -s '/Library/Frameworks/Mono.framework/Versions/${{ parameters.monoversion }}' '/Library/Frameworks/Mono.framework/Versions/Current'
+
+      echo "Force using Xamarin iOS SDK $(xamariniossdkversion)"
+      rm -f '/Library/Frameworks/Xamarin.iOS.framework/Versions/Current'
+      ln -s '/Library/Frameworks/Xamarin.iOS.framework/Versions/${{ parameters.xamariniossdkversion }}' '/Library/Frameworks/Xamarin.iOS.framework/Versions/Current'
+    displayName: 'Force versions in Azure Hosted Agent'
+    condition: and(succeeded(), eq('${{ parameters.runningInAzureHostedAgent }}', 'true'))
+  - script: |
+      echo "Using a self-hosted agent, will use tools installed - e.g. can't select specific tool versions"
+    displayName: '[INFO] Running on a self-hosted agent'
+    condition: eq('${{ parameters.runningInAzureHostedAgent }}', 'false')
+  - task: MSBuild@1
+    displayName: 'Restore NuGet packages'
+    inputs:
+      solution: ${{ parameters.csproj_ios }}
+      configuration: ${{ parameters.buildConfiguration }}
+      msbuildArguments: '/t:restore'
+  - task: xamarinios@2
+    displayName: 'Compile Xamarin.iOS project'
+    inputs:
+      msbuildVersionOption: ${{ parameters.msbuildversion }}
+      solutionfile: ${{ parameters.csproj_ios }}
+      configuration: ${{ parameters.buildConfiguration }}
+      buildforsimulator: ${{ parameters.buildforsimulator }}
+      packageapp: ${{ parameters.packageapp }}
+      signingIdentity: ${{ parameters.signingIdentity }}
+      signingProvisioningProfileID: ${{ parameters.signingProvisioningProfileID }}

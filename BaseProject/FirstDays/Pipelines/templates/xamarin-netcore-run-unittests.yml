@@ -1,0 +1,20 @@
+parameters:
+  buildConfiguration: 'Release'
+  csproj_unittest: '<PLEASE_SPECIFY_CSPROJ_PATH_HERE>'
+  dotnetsdkversion: '3.0.100'
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK ${{ parameters.dotnetsdkversion }}'
+    inputs:
+      packageType: sdk
+      version: ${{ parameters.dotnetsdkversion }}
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+  - script: |
+      dotnet test "${{ parameters.csproj_unittest }}" --configuration ${{ parameters.buildConfiguration }} --logger trx
+    displayName: 'Run unit tests'    
+  - task: PublishTestResults@2
+    displayName: 'Publish test results'
+    condition: succeededOrFailed()
+    inputs:
+      testRunner: VSTest
+      testResultsFiles: '**/*.trx'

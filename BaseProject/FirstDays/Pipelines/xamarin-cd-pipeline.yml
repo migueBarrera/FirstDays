@@ -1,0 +1,113 @@
+trigger:
+- none
+
+pr: none
+
+variables:
+  - group: csprojs
+  - group: androidsecrets
+  - group: iossecrets
+  - group: versions
+  - group: appversioning
+  
+jobs:
+
+#########################################################################
+
+- job: GetAppVersion
+  displayName: 'Get App Version'
+  pool:
+    vmImage: 'windows-2019'
+  workspace:
+    clean: all
+  steps:
+    - pwsh: |
+        $TimestampEpoch = Get-Date -Date '2018-01-01'
+        $DaysSinceEpoch = (New-TimeSpan -Start $TimestampEpoch -End $(Get-Date)).Days
+        $MinutesSinceMidnight= [int] (New-TimeSpan -Start $(Get-Date -Hour 0 -Minute 00 -Second 00) -End $(Get-Date)).TotalMinutes
+        $MinutesSinceMidnightFourDigits = ([string]$minutesSinceMidnight).PadLeft(4,'0')
+        $AppVersionNumericSeparatedByDots = "$Env:APPMAJORVERSION.$DaysSinceEpoch.$MinutesSinceMidnight"
+        $AppVersionStringOverlappedAndPadded = "$Env:APPMAJORVERSION$DaysSinceEpoch$MinutesSinceMidnightFourDigits"
+        # Set output variables
+        Write-Host "App version -> $AppVersionNumericSeparatedByDots, setting output variable 'appversion'"
+        Write-Host "##vso[task.setvariable variable=appversion;isOutput=true]$AppVersionNumericSeparatedByDots"
+        Write-Host "String app version -> $AppVersionStringOverlappedAndPadded, setting output variable 'stringappversion'"
+        Write-Host "##vso[task.setvariable variable=stringappversion;isOutput=true]$AppVersionStringOverlappedAndPadded"
+        # Update build name
+        Write-Host "##vso[build.updatebuildnumber]$AppVersionNumericSeparatedByDots"
+      name: GetAppVersionTask
+      displayName: 'Get app version, set BuildName'
+
+##############################################################
+### ANDROID BUILD ############################################
+##############################################################
+
+- job: Android
+  displayName: Android Build
+  pool:
+    vmImage: 'windows-2019'
+    demands: Xamarin.Android
+  workspace:
+    clean: all
+  dependsOn: GetAppVersion
+  variables:
+    appversion: $[ dependencies.GetAppVersion.outputs['GetAppVersionTask.appversion'] ]
+    stringappversion: $[ dependencies.GetAppVersion.outputs['GetAppVersionTask.stringappversion'] ]
+  condition: ne('true', variables['SKIP_ANDROID_BUILD'])
+  steps:
+
+  # NOTE: This tag triggers release pipelines
+  - pwsh: Write-Host "##vso[build.addbuildtag]ANDROID"
+    displayName: 'Add build tag'
+  - task: PowerShell@2
+    inputs:
+      targetType: 'filePath'
+      filePath: 'pipelines/update-xamarin-forms-app-version-pscore.ps1'
+      arguments: '-Android -AppVersion $(appversion) -StringAppVersion $(stringappversion) -PathToAndroidManifest $(Build.SourcesDirectory)/LaughBattle/LaughBattle.Android/Properties/AndroidManifest.xml'
+      pwsh: true
+    displayName: Set Android app version  
+
+  - template: templates/xamarin-android-restore-and-compile.yml
+    parameters:
+      buildConfiguration: $(buildConfiguration)
+      dotnetsdkversion: $(DOTNET_SDK_VERSION)
+      createAppPackage: true
+      csproj_android: $(csproj_android)
+
+  - pwsh: |
+      $FilesToRename = Get-ChildItem -Recurse -Path $(Build.Repository.LocalPath) -Filter *.apk
+      Write-Host "Files to be processed: " $FilesToRename
+      $FilesToRename | Rename-Item -NewName { $_.BaseName + "-" + "$(appversion)" + ".apk" }
+      $FilesRenamed = Get-ChildItem -Recurse -Path $(Build.Repository.LocalPath) -Filter *.apk
+      Write-Host "Files renamed: " $FilesRenamed
+    displayName: 'Include app version on APK'
+
+  - task: AndroidSigning@3
+    inputs:
+      apkFiles: '**/*.apk'
+      apksignerKeystoreFile: $(ANDROID_KEYSTORE)
+      apksignerKeystorePassword: '$(ANDROID_KEYSTORE_PASSWORD)'
+      apksignerKeystoreAlias: '$(ANDROID_KEYSTORE_KEY)'
+      apksignerKeyPassword: '$(ANDROID_KEYSTORE_KEY_PASSWORD)'
+
+  - task: CopyFiles@2
+    displayName: 'Move APKs to artifacts directory'
+    inputs:
+      sourceFolder: '$(Build.Repository.LocalPath)'
+      contents: '**/*.apk'
+      targetFolder: '$(build.artifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      ArtifactName: 'AndroidPackage'
+      publishLocation: 'Container'
+
+  - task: AppCenterDistribute@3
+    inputs:
+      serverEndpoint: 'AppCenterConnection'
+      appSlug: '$(APPCENTER_ANDROID_DISTRIBUTION_SLUG)'
+      appFile: '**/*.apk'
+      symbolsOption: 'Android'
+      releaseNotesOption: 'input'
+      releaseNotesInput: 'Build $(Build.BuildNumber). Development version'
+      destinationType: 'groups'
+      distributionGroupId: '$(APPCENTER_ANDROID_DISTRIBUTION_GROUP)'

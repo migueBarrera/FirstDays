@@ -1,0 +1,114 @@
+trigger: none
+
+# Triggers on PRs to that branches
+pr:
+- master
+- develop
+
+variables:
+  - group: csprojs
+  - group: iossecrets
+  - group: versions
+  - group: appversioning
+  - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+    value: true
+  - name: dotnetsdkversion
+    value: $(DOTNET_SDK_VERSION)
+
+jobs:
+
+################################################################################
+
+- job: GetAppVersion
+  displayName: 'Get App Version'
+  pool:
+    vmImage: 'windows-2019'
+  workspace:
+    clean: all
+  steps:
+    - pwsh: |
+        $TimestampEpoch = Get-Date -Date '2018-01-01'
+        $DaysSinceEpoch = (New-TimeSpan -Start $TimestampEpoch -End $(Get-Date)).Days
+        $MinutesSinceMidnight= [int] (New-TimeSpan -Start $(Get-Date -Hour 0 -Minute 00 -Second 00) -End $(Get-Date)).TotalMinutes
+        $MinutesSinceMidnightFourDigits = ([string]$minutesSinceMidnight).PadLeft(4,'0')
+        $AppVersionNumericSeparatedByDots = "$Env:APPMAJORVERSION.$DaysSinceEpoch.$MinutesSinceMidnight"
+        $AppVersionStringOverlappedAndPadded = "$Env:APPMAJORVERSION$DaysSinceEpoch$MinutesSinceMidnightFourDigits"
+        # Set output variables
+        Write-Host "App version -> $AppVersionNumericSeparatedByDots, setting output variable 'appversion'"
+        Write-Host "##vso[task.setvariable variable=appversion;isOutput=true]$AppVersionNumericSeparatedByDots"
+        Write-Host "String app version -> $AppVersionStringOverlappedAndPadded, setting output variable 'stringappversion'"
+        Write-Host "##vso[task.setvariable variable=stringappversion;isOutput=true]$AppVersionStringOverlappedAndPadded"
+        # Update build name
+        Write-Host "##vso[build.updatebuildnumber]$AppVersionNumericSeparatedByDots-cibuild"
+      name: GetAppVersionTask
+      displayName: 'Get app version, set BuildName'
+
+###################
+### Android BUILD
+###################
+
+- job: Android_Job
+  dependsOn: GetAppVersion
+  displayName: Android CI Build
+  pool:
+    vmImage: 'windows-2019'
+    demands:
+      - msbuild
+      - MSBuild
+      - Xamarin.Android
+      - JDK
+  workspace:
+    clean: all
+  condition: ne('true', variables['SKIP_ANDROID_BUILD'])
+  steps:
+  - template: templates/xamarin-android-restore-and-compile.yml
+    parameters:
+      buildConfiguration: $(buildConfiguration)
+      dotnetsdkversion: $(dotnetsdkversion)
+      createAppPackage: false
+      csproj_android: $(csproj_android)
+
+###################
+### iOS BUILD
+###################
+
+- job: iOS_Job
+  dependsOn: GetAppVersion
+  displayName: iOS CI Build
+  pool:
+    vmImage: 'macOS-10.14'
+    demands: Xamarin.iOS
+  workspace:
+    clean: all
+  condition: not(variables['SKIP_IOS_BUILD'])
+  steps:
+  - template: templates/xamarin-ios-restore-and-compile.yml
+    parameters:
+      buildConfiguration: $(buildConfiguration)
+      dotnetsdkversion: $(dotnetsdkversion)
+      buildforsimulator: true
+      packageapp: false
+      runningInAzureHostedAgent: false
+      csproj_ios: $(csproj_ios)
+      
+###################
+### UWP BUILD
+###################
+
+- job: UWP_Job
+  displayName: UWP CI Build
+  dependsOn: GetAppVersion
+  pool:
+    vmImage: 'windows-2019'
+    demands:
+      - msbuild
+      - visualstudio
+  workspace:
+    clean: all
+  condition: ne('true', variables['SKIP_UWP_BUILD'])
+  steps:
+  - template: templates/xamarin-uwp-restore-and-compile.yml
+    parameters:
+      buildConfiguration: $(buildConfiguration)
+      dotnetsdkversion: $(dotnetsdkversion)
+      csproj_uwp: $(csproj_uwp)

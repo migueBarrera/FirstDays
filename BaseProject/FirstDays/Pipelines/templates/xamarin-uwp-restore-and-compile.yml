@@ -1,0 +1,27 @@
+# This parameters are default values, in case they aren't specified when using this template
+parameters:
+  buildConfiguration: 'Release'
+  outputDirectory: '$(build.binariesDirectory)/uwp/$(buildConfiguration)'
+  dotnetsdkversion: '3.0.100'
+  msbuildversion: 'latest'
+  csproj_uwp: '<PLEASE_SPECIFY_CSPROJ_PATH_HERE>'
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK ${{ parameters.dotnetsdkversion }}'
+    inputs:
+      packageType: sdk
+      version: ${{ parameters.dotnetsdkversion }}
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+  - task: MSBuild@1
+    displayName: 'Restore NuGet packages'
+    inputs:
+      solution: ${{ parameters.csproj_uwp }}
+      configuration: ${{ parameters.buildConfiguration }}
+      msbuildArguments: '/t:restore'
+  - task: VSBuild@1
+    displayName: 'Build Xamarin.UWP project'
+    inputs:
+      solution: ${{ parameters.csproj_uwp }}
+      #msbuildArgs: '/p:AppxBundlePlatforms="${{ parameters.buildConfiguration }}" /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\AppxPackages\\" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
+      platform: x86
+      configuration: ${{ parameters.buildConfiguration }}

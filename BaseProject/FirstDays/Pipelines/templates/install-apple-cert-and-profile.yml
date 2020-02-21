@@ -1,0 +1,20 @@
+# Quick way to install certificates and provisioning profiles on build agents
+# You must upload them to "Secure Files"
+
+parameters:
+  certSecureFile: ''
+  certPwd: ''
+  provProfileSecureFile: ''
+  
+steps:
+
+  - task: InstallAppleCertificate@2
+    inputs:
+      keychain: 'temp'
+      certSecureFile: ${{ parameters.certSecureFile }}
+      certPwd: ${{ parameters.certPwd }}
+
+  - task: InstallAppleProvisioningProfile@1
+    inputs:
+      provisioningProfileLocation: 'secureFiles'
+      provProfileSecureFile: ${{ parameters.provProfileSecureFile }}
