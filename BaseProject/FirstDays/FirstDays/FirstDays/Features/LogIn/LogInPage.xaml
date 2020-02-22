@@ -5,6 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:framework="clr-namespace:FirstDays.Framework"
+    xmlns:local="clr-namespace:FirstDays.Features.LogIn"
+    x:TypeArguments="local:LogInViewModel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <ContentPage.Content>
@@ -13,6 +15,7 @@
                 HorizontalOptions="CenterAndExpand"
                 Text="Welcome to Xamarin.Forms!"
                 VerticalOptions="CenterAndExpand" />
+            <Button Text="TaskHelper Test" Command="{Binding ClickButtonCommand}"/>
         </StackLayout>
     </ContentPage.Content>
 </framework:BaseContentPage>

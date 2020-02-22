@@ -8,7 +8,7 @@ namespace FirstDays.Framework
     {
         protected readonly ILoggingService LoggingService;
         protected readonly IDialogsService DialogsService;
-        private readonly IConnectivityService connectivityService;
+        protected readonly IConnectivityService ConnectivityService;
         protected readonly INavigationService NavigationService;
         protected readonly ISessionService SessionService;
         protected readonly TaskHelperFactory TaskHelperFactory;
@@ -20,10 +20,10 @@ namespace FirstDays.Framework
         {
             this.LoggingService = Locator.Resolve<ILoggingService>();
             this.DialogsService = Locator.Resolve<IDialogsService>();
-            this.connectivityService = Locator.Resolve<IConnectivityService>();
+            this.ConnectivityService = Locator.Resolve<IConnectivityService>();
             this.NavigationService = Locator.Resolve<INavigationService>();
             this.SessionService = Locator.Resolve<ISessionService>();
-            this.TaskHelperFactory = new TaskHelperFactory(DialogsService, connectivityService);
+            this.TaskHelperFactory = new TaskHelperFactory(DialogsService, ConnectivityService);
         }
 
         public bool IsBusy
