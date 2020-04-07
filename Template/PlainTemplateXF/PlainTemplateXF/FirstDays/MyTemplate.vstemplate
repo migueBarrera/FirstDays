@@ -1,0 +1,77 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>FirstDays</Name>
+    <Description>&lt;No hay ninguna descripción disponible&gt;</Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>FirstDays</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <CreateInPlace>true</CreateInPlace>
+    <Icon>__TemplateIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="FirstDays.csproj" File="FirstDays.csproj" ReplaceParameters="true">
+      <Folder Name="Features" TargetFolderName="Features">
+        <Folder Name="LogIn" TargetFolderName="LogIn">
+          <ProjectItem ReplaceParameters="true" TargetFileName="LogInPage.xaml">LogInPage.xaml</ProjectItem>
+          <ProjectItem ReplaceParameters="true" TargetFileName="LogInPage.xaml.cs">LogInPage.xaml.cs</ProjectItem>
+          <ProjectItem ReplaceParameters="true" TargetFileName="LogInViewModel.cs">LogInViewModel.cs</ProjectItem>
+        </Folder>
+      </Folder>
+      <Folder Name="Framework" TargetFolderName="Framework">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AsyncCommand.cs">AsyncCommand.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="BaseBindableObject.cs">BaseBindableObject.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="BaseContentPage.cs">BaseContentPage.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="BaseViewModel.cs">BaseViewModel.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="DefaultSettings.cs">DefaultSettings.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Locator.cs">Locator.cs</ProjectItem>
+      </Folder>
+      <Folder Name="Resources" TargetFolderName="Resources">
+        <Folder Name="Localization" TargetFolderName="Localization">
+          <ProjectItem ReplaceParameters="true" TargetFileName="Strings.resx">Strings.resx</ProjectItem>
+          <ProjectItem ReplaceParameters="true" TargetFileName="Strings.Designer.cs">Strings.Designer.cs</ProjectItem>
+        </Folder>
+      </Folder>
+      <Folder Name="Services" TargetFolderName="Services">
+        <Folder Name="Commons" TargetFolderName="Commons">
+          <Folder Name="ConnectivityServices" TargetFolderName="ConnectivityServices">
+            <ProjectItem ReplaceParameters="true" TargetFileName="ConnectivityService.cs">ConnectivityService.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="IConnectivityService.cs">IConnectivityService.cs</ProjectItem>
+          </Folder>
+          <Folder Name="DialogsServices" TargetFolderName="DialogsServices">
+            <ProjectItem ReplaceParameters="true" TargetFileName="DialogsService.cs">DialogsService.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="IDialogsService.cs">IDialogsService.cs</ProjectItem>
+          </Folder>
+          <Folder Name="LoggingServices" TargetFolderName="LoggingServices">
+            <ProjectItem ReplaceParameters="true" TargetFileName="AppCenterLoggingService.cs">AppCenterLoggingService.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="DebugLoggingService.cs">DebugLoggingService.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="ILoggingService.cs">ILoggingService.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="LogLevel.cs">LogLevel.cs</ProjectItem>
+          </Folder>
+          <Folder Name="NavigationServices" TargetFolderName="NavigationServices">
+            <ProjectItem ReplaceParameters="true" TargetFileName="INavigationService.cs">INavigationService.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="NavigationService.cs">NavigationService.cs</ProjectItem>
+          </Folder>
+          <Folder Name="SessionServices" TargetFolderName="SessionServices">
+            <ProjectItem ReplaceParameters="true" TargetFileName="ISessionService.cs">ISessionService.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="SessionConst.cs">SessionConst.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="SessionService.cs">SessionService.cs</ProjectItem>
+          </Folder>
+          <Folder Name="TaskServices" TargetFolderName="TaskServices">
+            <ProjectItem ReplaceParameters="true" TargetFileName="ITaskHelper.cs">ITaskHelper.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="TaskHelper.cs">TaskHelper.cs</ProjectItem>
+            <ProjectItem ReplaceParameters="true" TargetFileName="TaskHelperFactory.cs">TaskHelperFactory.cs</ProjectItem>
+          </Folder>
+        </Folder>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml">App.xaml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.cs">App.xaml.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

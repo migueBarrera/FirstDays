@@ -1,0 +1,41 @@
+<VSTemplate Version="2.0.0" Type="ProjectGroup"
+    xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+    <TemplateData>
+        <Name>Plain Xamarin Forms Template</Name>
+        <Description>A basic multi-project for Xamarin Forms</Description>
+        <Icon>FormsProject.ico</Icon>
+        <ProjectType>CSharp</ProjectType>
+		<LanguageTag>C#</LanguageTag>
+		<PlatformTag>windows</PlatformTag>
+		<PlatformTag>android</PlatformTag>
+		<PlatformTag>ios</PlatformTag>
+		<ProjectTypeTag>mobile</ProjectTypeTag>
+        <ProjectTypeTag>uwp</ProjectTypeTag>
+    </TemplateData>
+    <TemplateContent>
+        <ProjectCollection>
+            <SolutionFolder Name="Code">
+                <ProjectTemplateLink ProjectName="$projectname$.UWP" CopyParameters="true">
+                    FirstDays.UWP\MyTemplate.vstemplate
+                </ProjectTemplateLink>
+                <ProjectTemplateLink ProjectName="$projectname$" CopyParameters="true">
+                    FirstDays\MyTemplate.vstemplate
+                </ProjectTemplateLink>
+                <ProjectTemplateLink ProjectName="$projectname$.Android" CopyParameters="true">
+                    FirstDays.Android\MyTemplate.vstemplate
+                </ProjectTemplateLink>
+                <ProjectTemplateLink ProjectName="$projectname$.iOS" CopyParameters="true">
+                    FirstDays.iOS\MyTemplate.vstemplate
+                </ProjectTemplateLink>
+            </SolutionFolder>
+            <SolutionFolder Name="CodeAnalysis">
+                <Folder Name="CodeAnalysis" TargetFolderName="CodeAnalysis">
+                   <ProjectItem ReplaceParameters="true" TargetFileName="CodeAnalysis.ruleset">CodeAnalysis.ruleset</ProjectItem>
+                   <ProjectItem ReplaceParameters="true" TargetFileName="Menees.Analyzers.Settings.xml">Menees.Analyzers.Settings.xml</ProjectItem>
+                   <ProjectItem ReplaceParameters="true" TargetFileName="Menees.Analyzers.Settings.xsd">Menees.Analyzers.Settings.xsd</ProjectItem>
+                </Folder>
+            </SolutionFolder>
+        </ProjectCollection>
+        
+    </TemplateContent>
+</VSTemplate>
