@@ -28,14 +28,6 @@
                     FirstDays.iOS\MyTemplate.vstemplate
                 </ProjectTemplateLink>
             </SolutionFolder>
-            <SolutionFolder Name="CodeAnalysis">
-                <Folder Name="CodeAnalysis" TargetFolderName="CodeAnalysis">
-                   <ProjectItem ReplaceParameters="true" TargetFileName="CodeAnalysis.ruleset">CodeAnalysis.ruleset</ProjectItem>
-                   <ProjectItem ReplaceParameters="true" TargetFileName="Menees.Analyzers.Settings.xml">Menees.Analyzers.Settings.xml</ProjectItem>
-                   <ProjectItem ReplaceParameters="true" TargetFileName="Menees.Analyzers.Settings.xsd">Menees.Analyzers.Settings.xsd</ProjectItem>
-                </Folder>
-            </SolutionFolder>
         </ProjectCollection>
-        
     </TemplateContent>
 </VSTemplate>

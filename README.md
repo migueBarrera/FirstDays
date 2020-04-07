@@ -1,4 +1,4 @@
-# Base project for Xamarin Forms And template
+# Base project for Xamarin Forms
 
 ## Este repositorio tiene un proyecto base de Xamarin.Forms que ayuda a iniciar el desarrollo de un proyecto más rápido en forma de Template para Visual Studio.
 ------
@@ -9,7 +9,7 @@
 * Descarga este repositorio.
 * Entra a la carpeta Template y copia el zip "PlainTemplateXF".
 * Pégalo en la ubicación de las templates en Visual Studio, normalmente "C:\Users\{{YourUser}}\Documents\Visual Studio 2019\Templates\ProjectTemplates"
-* Entra en Visual Studio -> Crear nuevo proyecto -> Busca la plantilla "Plain Xamarin Forms Template" -> Seleciona y pulda crear.
+* Entra en Visual Studio -> Crear nuevo proyecto -> Busca la plantilla "Plain Xamarin Forms Template" -> Seleciona y pulsa crear.
 
 #### Método 2 (No disponible aún)
 * Abir en Visual Studio -> Extensions
@@ -29,3 +29,7 @@
 * Como ya tenemos una plantilla generada y preparada si tiene pocos cambios o son "controlables" se puedes hacer directamente sobre la plantilla
 
 ----------
+
+### Próximos pasos
+* Añadir a la plantilla los siguientes archivos o carpetas que ya se encuentrar en el BaseProject: CodeAnalysis, Pipelines, Directory.Build.props y .gitignore
+* Automatizar la compilacion del proyecto VSIX y subida
