@@ -1,6 +1,7 @@
 # Base project for Xamarin Forms
 
 ## Este repositorio tiene un proyecto base de Xamarin.Forms que ayuda a iniciar el desarrollo de un proyecto más rápido en forma de Template para Visual Studio.
+## De igual forma puede usarse BaseProject como proyecto de referencia para realizar uno nuevo.
 ------
 
 
